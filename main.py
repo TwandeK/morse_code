@@ -43,12 +43,12 @@ def mp3_folder():
 
 def get_sounds():
     folder_path, new_folder_created = mp3_folder()
-    alphabet_morse = 'ABCD' # BCDEFGHIJKLMNOPRSTUVWXYZ
+    alphabet_morse = 'ABCDBCDEFGHIJKLMNOPRSTUVWXYZ'
 
     if not new_folder_created:
         print(f'No webscrape needed for mp3 files')
     else:
-        print(f'To listen to morse code, downloading mp3 files...')
+        print(f'We need to download the sounds from wikipedia, downloading mp3 files...')
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("detach", True)
@@ -61,7 +61,7 @@ def get_sounds():
 
         # Initialize the WebDriver with the options
         driver = webdriver.Chrome(options=chrome_options)
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 5)
 
         for letter in alphabet_morse:
             driver.get(f'https://commons.wikimedia.org/wiki/File:Morse-{letter}.ogg')
@@ -85,6 +85,9 @@ def play():
     letters = input_alphabet.get()
     for letter in letters:
         playsound(f'{base_path}\Morse-{letter}.ogg.mp3')
+
+
+get_sounds() #Makes file and scrapes mp3 files from wikipedia
 
 #set up window
 window = tk.Tk()
