@@ -11,10 +11,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def morse_trans(user_input):
-    file_path = 'morse.json'
+MORSE_JSON_FILES =  'morse.json'
+MP3_LOCATION = 'morse_mp3_files'
 
-    with open(file_path, 'r') as file:
+def morse_trans(user_input):
+    with open(MORSE_JSON_FILES, 'r') as file:
         morse_dict = json.load(file)
 
     morse_output = " "
@@ -27,39 +28,29 @@ def morse_trans(user_input):
 
 def mp3_folder():
     current_dir = os.path.dirname(os.path.abspath(__file__)) #gets directory of where script is located
-    folder_name = "morse_mp3_files" #file to create
-    folder_path = os.path.join(current_dir, folder_name) #full path of file to create
+    folder_path = os.path.join(current_dir, MP3_LOCATION) #full path of file to create
 
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
         print(f'folder created at {folder_path}')
-        new_folder_created = True
     else:
         print(f'folder already exists at {folder_path}')
-        new_folder_created = False
 
-    return folder_path, new_folder_created
+    return folder_path
 
 
 def get_sounds():
-    folder_path, new_folder_created = mp3_folder()
+    folder_path = mp3_folder()
     alphabet_morse = 'ABCDBCDEFGHIJKLMNOPRSTUVWXYZ'
 
-    if not new_folder_created:
-        print(f'No webscrape needed for mp3 files')
-    else:
-        print(f'We need to download the sounds from wikipedia, downloading mp3 files...')
+    if not os.listdir(folder_path):
+        print(f'Downloading sounds from wikipedia...')
 
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("detach", True)
-
-        #return download path as string from mp3_folder
         prefs = {"download.default_directory": folder_path}
-
         chrome_options.add_argument("--disable-search-engine-choice-screen")
         chrome_options.add_experimental_option("prefs", prefs)
-
-        # Initialize the WebDriver with the options
         driver = webdriver.Chrome(options=chrome_options)
         wait = WebDriverWait(driver, 5)
 
@@ -70,21 +61,15 @@ def get_sounds():
 
 
 def on_translate():
-    # Get the input text from the input_alphabet field
     input_text = input_alphabet.get()
-
-    # Process the input text using morse_trans
     output_text = morse_trans(input_text)
-
-    # Update the morse_output_text label with the result
     morse_output_results.config(text=f"{output_text}")
 
 
 def play():
-    base_path = 'morse_mp3_files'
     letters = input_alphabet.get()
     for letter in letters:
-        playsound(f'{base_path}\Morse-{letter}.ogg.mp3')
+        playsound(f'{MP3_LOCATION}\Morse-{letter}.ogg.mp3')
 
 if __name__ == '__main__':
 
